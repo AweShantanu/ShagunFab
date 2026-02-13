@@ -259,7 +259,7 @@ const Dashboard = () => {
                                     whileTap={{ scale: 0.95 }}
                                 >
                                     <Plus className="w-5 h-5" />
-                                    Add New Saree
+                                    Add New Product
                                 </motion.button>
                             </div>
 
@@ -293,7 +293,8 @@ const Dashboard = () => {
 
                                         <div className="p-5 relative z-10">
                                             <h3 className="text-white font-bold text-lg mb-2 truncate">{product.name}</h3>
-                                            <div className="flex items-center gap-3 text-sm text-gray-400 mb-4">
+                                            <div className="flex items-center gap-2 text-xs text-gray-400 mb-4 overflow-x-auto pb-1">
+                                                <span className="backdrop-blur-sm bg-red-500/10 text-red-400 px-2 py-1 rounded-lg border border-red-500/10">{product.category}</span>
                                                 <span className="backdrop-blur-sm bg-white/5 px-2 py-1 rounded-lg">{product.fabric}</span>
                                                 <span className="backdrop-blur-sm bg-white/5 px-2 py-1 rounded-lg">Stock: {product.stock}</span>
                                             </div>
@@ -369,7 +370,7 @@ const Dashboard = () => {
                                 <div className="flex justify-between items-center mb-8">
                                     <h2 className="text-3xl font-bold bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent flex items-center gap-2">
                                         <Sparkles className="w-7 h-7 text-red-400" />
-                                        Add New Saree
+                                        Add New Product
                                     </h2>
                                     <motion.button
                                         onClick={() => setShowAddModal(false)}
@@ -432,7 +433,19 @@ const Dashboard = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-300 mb-2">Category</label>
+                                            <select
+                                                required
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-red-500/50 focus:outline-none transition-all"
+                                                value={newProduct.category}
+                                                onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                                            >
+                                                <option value="Saree" className="bg-gray-800">Saree</option>
+                                                <option value="Lehenga" className="bg-gray-800">Lehenga</option>
+                                            </select>
+                                        </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-300 mb-2">Occasion</label>
                                             <select

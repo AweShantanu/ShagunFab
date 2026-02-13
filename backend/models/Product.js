@@ -8,7 +8,7 @@ const productSchema = mongoose.Schema({
     occasion: { type: String, required: true }, // Wedding, Casual, Party
     description: { type: String, required: true },
     images: [{ type: String, required: true }],
-    video: { type: String },
+    category: { type: String, required: true, default: 'Saree', enum: ['Saree', 'Lehenga'] },
     stock: { type: Number, required: true, default: 0 },
 }, {
     timestamps: true,

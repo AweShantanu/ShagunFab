@@ -35,7 +35,7 @@ router.get('/:id', async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 router.post('/', protect, admin, async (req, res) => {
-    const { name, price, fabric, color, occasion, description, images, video, stock } = req.body;
+    const { name, price, fabric, color, occasion, description, images, video, category, stock } = req.body;
 
     const product = new Product({
         name,
@@ -46,6 +46,7 @@ router.post('/', protect, admin, async (req, res) => {
         description,
         images,
         video,
+        category,
         stock,
     });
 
@@ -62,7 +63,7 @@ router.post('/', protect, admin, async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 router.put('/:id', protect, admin, async (req, res) => {
-    const { name, price, fabric, color, occasion, description, images, video, stock } = req.body;
+    const { name, price, fabric, color, occasion, description, images, video, category, stock } = req.body;
 
     try {
         const product = await Product.findById(req.params.id);
@@ -76,6 +77,7 @@ router.put('/:id', protect, admin, async (req, res) => {
             product.description = description;
             product.images = images;
             product.video = video;
+            product.category = category;
             product.stock = stock;
 
             const updatedProduct = await product.save();

@@ -11,7 +11,8 @@ const Shop = () => {
     const [filters, setFilters] = useState({
         priceRange: 50000,
         fabric: 'All',
-        occasion: 'All'
+        occasion: 'All',
+        category: 'Saree'
     });
     const [sortBy, setSortBy] = useState('newest');
 
@@ -259,6 +260,35 @@ const Shop = () => {
                     <p className="text-gray-400 text-lg">Discover timeless elegance</p>
                 </motion.div>
 
+                {/* Category Switcher */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex justify-center mb-12"
+                >
+                    <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-1.5 rounded-2xl flex gap-1">
+                        {['Saree', 'Lehenga'].map((cat) => (
+                            <motion.button
+                                key={cat}
+                                onClick={() => setFilters({ ...filters, category: cat })}
+                                className={`px-8 py-3 rounded-xl font-bold transition-all relative ${filters.category === cat ? 'text-white' : 'text-gray-400 hover:text-white'
+                                    }`}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                {filters.category === cat && (
+                                    <motion.div
+                                        layoutId="activeCategory"
+                                        className="absolute inset-0 bg-gradient-to-r from-red-600 to-pink-600 rounded-xl shadow-lg shadow-red-600/20"
+                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
+                                <span className="relative z-10">{cat}s</span>
+                            </motion.button>
+                        ))}
+                    </div>
+                </motion.div>
+
                 {/* Search & Filter Bar */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -364,10 +394,11 @@ const Shop = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16">
                     {products
                         .filter(product => {
+                            const matchesCategory = product.category === filters.category || (!product.category && filters.category === 'Saree');
                             const matchesFabric = filters.fabric === 'All' || product.fabric === filters.fabric;
                             const matchesOccasion = filters.occasion === 'All' || product.occasion === filters.occasion;
                             const matchesPrice = product.price <= filters.priceRange;
-                            return matchesFabric && matchesOccasion && matchesPrice;
+                            return matchesCategory && matchesFabric && matchesOccasion && matchesPrice;
                         })
                         .sort((a, b) => {
                             if (sortBy === 'price-low') return a.price - b.price;
@@ -382,10 +413,11 @@ const Shop = () => {
 
                 {/* Empty State */}
                 {products.filter(product => {
+                    const matchesCategory = product.category === filters.category || (!product.category && filters.category === 'Saree');
                     const matchesFabric = filters.fabric === 'All' || product.fabric === filters.fabric;
                     const matchesOccasion = filters.occasion === 'All' || product.occasion === filters.occasion;
                     const matchesPrice = product.price <= filters.priceRange;
-                    return matchesFabric && matchesOccasion && matchesPrice;
+                    return matchesCategory && matchesFabric && matchesOccasion && matchesPrice;
                 }).length === 0 && (
                         <motion.div
                             initial={{ opacity: 0 }}
