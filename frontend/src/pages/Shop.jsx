@@ -264,11 +264,11 @@ const Shop = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="max-w-4xl mx-auto mb-12 space-y-6"
+                    className="max-w-4xl mx-auto mb-12 space-y-6 px-2 md:px-0"
                 >
-                    <div className="flex flex-col md:flex-row gap-6 items-end">
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-stretch md:items-end">
                         {/* Price Range - Moved Outside */}
-                        <div className="flex-1 backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6">
+                        <div className="flex-1 backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6">
                             <label className="block text-gray-400 text-sm mb-3 font-medium flex items-center gap-2">
                                 <Sparkles className="w-4 h-4 text-yellow-400" />
                                 Max Price: ₹{filters.priceRange}
@@ -288,10 +288,10 @@ const Shop = () => {
                             </div>
                         </div>
 
-                        <div className="flex gap-4">
+                        <div className="flex gap-3 md:gap-4 w-full md:w-auto">
                             <motion.button
                                 onClick={() => setShowFilters(!showFilters)}
-                                className={`px-6 py-4 rounded-2xl border transition-all flex items-center gap-2 font-semibold h-[56px] ${showFilters
+                                className={`flex-1 md:flex-none px-4 md:px-6 py-4 rounded-2xl border transition-all flex items-center justify-center gap-2 font-semibold h-[56px] ${showFilters
                                     ? 'bg-red-500 border-red-400 text-white shadow-lg shadow-red-500/20'
                                     : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
                                     }`}
@@ -299,17 +299,17 @@ const Shop = () => {
                                 whileTap={{ scale: 0.98 }}
                             >
                                 <SlidersHorizontal className="w-5 h-5" />
-                                Categories
+                                <span className="text-sm md:text-base">Filters</span>
                             </motion.button>
-                            <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden min-w-[200px] h-[56px]">
+                            <div className="flex-1 md:flex-none relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden min-w-[140px] md:min-w-[200px] h-[56px]">
                                 <select
                                     value={sortBy}
                                     onChange={(e) => setSortBy(e.target.value)}
-                                    className="w-full h-full bg-transparent text-white px-4 py-4 focus:outline-none appearance-none cursor-pointer"
+                                    className="w-full h-full bg-transparent text-white px-4 py-4 focus:outline-none appearance-none cursor-pointer text-sm md:text-base"
                                 >
-                                    <option value="newest" className="bg-gray-800">Newest First</option>
-                                    <option value="price-low" className="bg-gray-800">Price: Low to High</option>
-                                    <option value="price-high" className="bg-gray-800">Price: High to Low</option>
+                                    <option value="newest" className="bg-gray-800">Newest</option>
+                                    <option value="price-low" className="bg-gray-800">Price: Low-High</option>
+                                    <option value="price-high" className="bg-gray-800">Price: High-Low</option>
                                 </select>
                             </div>
                         </div>

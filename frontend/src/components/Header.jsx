@@ -64,9 +64,17 @@ const Header = () => {
                     )}
                 </div>
 
-                {/* Mobile Menu Button */}
-                <div className="md:hidden">
-                    <button onClick={() => setIsOpen(!isOpen)} className="text-gray-700 focus:outline-none">
+                {/* Mobile Icons & Menu Button */}
+                <div className="flex md:hidden items-center space-x-4">
+                    <Link to="/cart" className="relative text-gray-700 hover:text-red-600 transition">
+                        <ShoppingCart className="w-6 h-6" />
+                        {cartItems.length > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                                {cartItems.reduce((acc, item) => acc + item.qty, 0)}
+                            </span>
+                        )}
+                    </Link>
+                    <button onClick={() => setIsOpen(!isOpen)} className="text-gray-700 focus:outline-none p-1">
                         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
                 </div>
@@ -91,12 +99,9 @@ const Header = () => {
                                 </Link>
                             </li>
                         ))}
-                        <li className="flex justify-between border-t pt-4">
-                            <Link to="/cart" onClick={() => setIsOpen(false)} className="flex items-center space-x-2 text-gray-700">
-                                <ShoppingCart className="w-5 h-5" /> <span>Cart</span>
-                            </Link>
-                            <Link to="/login" onClick={() => setIsOpen(false)} className="flex items-center space-x-2 text-gray-700">
-                                <User className="w-5 h-5" /> <span>Login</span>
+                        <li className="pt-4 border-t">
+                            <Link to="/login" onClick={() => setIsOpen(false)} className="flex items-center space-x-2 text-gray-700 px-2 py-1">
+                                <User className="w-5 h-5" /> <span>Login / Account</span>
                             </Link>
                         </li>
                     </ul>

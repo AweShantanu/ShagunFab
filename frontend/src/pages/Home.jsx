@@ -57,7 +57,7 @@ const Home = () => {
                     style={{ y: y1 }}
                     className="absolute inset-0"
                 >
-                    <div className="absolute inset-0 grid grid-cols-3 gap-2 p-2 opacity-40">
+                    <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-2 p-2 opacity-40">
                         <img
                             src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80"
                             alt="Saree"
@@ -80,7 +80,7 @@ const Home = () => {
                     style={{ y: y2 }}
                     className="absolute inset-0"
                 >
-                    <div className="absolute inset-0 grid grid-cols-3 gap-2 p-2 opacity-30 translate-y-20">
+                    <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-2 p-2 opacity-30 translate-y-20">
                         <img
                             src="https://images.unsplash.com/photo-1583391725988-6490d8078752?w=800&q=80"
                             alt="Saree"
