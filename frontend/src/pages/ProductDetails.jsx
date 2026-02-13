@@ -10,6 +10,12 @@ const ProductDetails = () => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [addedToCart, setAddedToCart] = useState(false);
+
+    // Magnifier states
+    const [showMagnifier, setShowMagnifier] = useState(false);
+    const [[imgWidth, imgHeight], setSize] = useState([0, 0]);
+    const [[x, y], setXY] = useState([0, 0]);
+
     const { addToCart } = useCart();
 
     useEffect(() => {
@@ -117,16 +123,76 @@ const ProductDetails = () => {
                         transition={{ duration: 0.6 }}
                         className="relative group"
                     >
-                        <div className="backdrop-blur-xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative">
+                        <div className="backdrop-blur-xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative cursor-zoom-in">
                             <motion.img
                                 src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/500'}
                                 alt={product.name}
                                 className="w-full h-[600px] object-cover"
-                                whileHover={{ scale: 1.05 }}
+                                onMouseEnter={(e) => {
+                                    const elem = e.currentTarget;
+                                    const { width, height } = elem.getBoundingClientRect();
+                                    setSize([width, height]);
+                                    setShowMagnifier(true);
+                                }}
+                                onMouseMove={(e) => {
+                                    const elem = e.currentTarget;
+                                    const { top, left } = elem.getBoundingClientRect();
+                                    const x = e.pageX - left - window.pageXOffset;
+                                    const y = e.pageY - top - window.pageYOffset;
+                                    setXY([x, y]);
+                                }}
+                                onMouseLeave={() => setShowMagnifier(false)}
                                 transition={{ duration: 0.4 }}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                            {/* Magnifier Overlay */}
+                            <AnimatePresence>
+                                {showMagnifier && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.5 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.5 }}
+                                        className="pointer-events-none absolute border-2 border-white/20 rounded-full shadow-2xl overflow-hidden z-50"
+                                        style={{
+                                            height: '200px',
+                                            width: '200px',
+                                            top: `${y - 100}px`,
+                                            left: `${x - 100}px`,
+                                            backgroundImage: `url('${product.images?.[0] || 'https://via.placeholder.com/500'}')`,
+                                            backgroundRepeat: 'no-repeat',
+                                            backgroundSize: `${imgWidth * 2.5}px ${imgHeight * 2.5}px`,
+                                            backgroundPosition: `-${x * 2.5 - 100}px -${y * 2.5 - 100}px`
+                                        }}
+                                    />
+                                )}
+                            </AnimatePresence>
+
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                         </div>
+
+                        {/* Video Demonstration Section */}
+                        {product.video && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5 }}
+                                className="mt-6 backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl overflow-hidden p-4"
+                            >
+                                <h3 className="text-white font-bold mb-4 flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4 text-yellow-400" />
+                                    Fabric Demonstration
+                                </h3>
+                                <div className="aspect-video bg-black rounded-2xl overflow-hidden relative">
+                                    <video
+                                        src={product.video}
+                                        controls
+                                        className="w-full h-full object-cover"
+                                        poster={product.images?.[0]}
+                                    />
+                                </div>
+                            </motion.div>
+                        )}
+
                         {/* Decorative Border */}
                         <div className="absolute -inset-4 bg-gradient-to-r from-red-500/20 to-purple-500/20 rounded-3xl blur-2xl -z-10 group-hover:blur-3xl transition-all duration-500" />
                     </motion.div>

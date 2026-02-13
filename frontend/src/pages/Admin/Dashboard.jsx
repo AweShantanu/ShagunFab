@@ -15,6 +15,7 @@ const Dashboard = () => {
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [videoUploading, setVideoUploading] = useState(false);
     const [newProduct, setNewProduct] = useState({
         name: '',
         price: '',
@@ -23,6 +24,7 @@ const Dashboard = () => {
         occasion: '',
         description: '',
         image: '',
+        video: '',
         category: 'Saree',
         stock: 10
     });
@@ -76,6 +78,36 @@ const Dashboard = () => {
         }
     };
 
+    const handleVideoChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('image', file);
+        setVideoUploading(true);
+
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            };
+            const { data } = await api.post('/api/upload', formData, config);
+
+            const finalPath = data.path.startsWith('http')
+                ? data.path
+                : (data.path.startsWith('/') ? data.path : `/${data.path.replace(/\\/g, '/')}`);
+
+            setNewProduct({ ...newProduct, video: finalPath });
+            setVideoUploading(false);
+        } catch (error) {
+            console.error('Video upload error', error);
+            setVideoUploading(false);
+            const message = error.response?.data?.message || 'Video upload failed. Check backend logs.';
+            alert(message);
+        }
+    };
+
     const handleAddProduct = async (e) => {
         e.preventDefault();
         try {
@@ -88,13 +120,14 @@ const Dashboard = () => {
 
             const productData = {
                 ...newProduct,
-                images: [newProduct.image]
+                images: [newProduct.image],
+                video: newProduct.video
             };
 
             await api.post('/api/products', productData, config);
             setShowAddModal(false);
             setNewProduct({
-                name: '', price: '', fabric: '', color: '', occasion: '', description: '', image: '', category: 'Saree', stock: 10
+                name: '', price: '', fabric: '', color: '', occasion: '', description: '', image: '', video: '', category: 'Saree', stock: 10
             });
             fetchProducts();
             alert('Product Added Successfully');
@@ -440,39 +473,73 @@ const Dashboard = () => {
                                         />
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-300 mb-2">Product Image</label>
-                                        <div className="border-2 border-dashed border-white/10 rounded-2xl p-8 bg-white/5 hover:border-red-500/50 transition-all cursor-pointer">
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={handleFileChange}
-                                                className="hidden"
-                                                id="image-upload"
-                                            />
-                                            <label htmlFor="image-upload" className="cursor-pointer w-full flex flex-col items-center">
-                                                {uploading ? (
-                                                    <motion.div
-                                                        animate={{ rotate: 360 }}
-                                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                        className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full"
-                                                    />
-                                                ) : newProduct.image ? (
-                                                    <div className="text-center">
-                                                        <img src={newProduct.image} alt="Preview" className="h-32 object-contain mx-auto mb-3 rounded-lg" />
-                                                        <div className="flex items-center justify-center gap-2 text-green-400">
-                                                            <CheckCircle2 className="w-5 h-5" />
-                                                            <span className="text-sm font-medium">Image Uploaded!</span>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-300 mb-2">Product Image</label>
+                                            <div className="border-2 border-dashed border-white/10 rounded-2xl p-6 bg-white/5 hover:border-red-500/50 transition-all cursor-pointer relative overflow-hidden group">
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleFileChange}
+                                                    className="absolute inset-0 opacity-0 cursor-pointer z-20"
+                                                />
+                                                <div className="flex flex-col items-center justify-center text-center">
+                                                    {uploading ? (
+                                                        <motion.div
+                                                            animate={{ rotate: 360 }}
+                                                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                            className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full mb-2"
+                                                        />
+                                                    ) : newProduct.image ? (
+                                                        <div className="relative">
+                                                            <img src={newProduct.image} alt="Preview" className="w-20 h-20 object-cover rounded-lg" />
+                                                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <Upload className="w-6 h-6 text-white" />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ) : (
-                                                    <>
-                                                        <Upload className="w-12 h-12 text-gray-400 mb-3" />
-                                                        <span className="text-gray-300 font-medium">Click to upload image</span>
-                                                        <span className="text-xs text-gray-500 mt-2">PNG, JPG or GIF (Max 5MB)</span>
-                                                    </>
-                                                )}
-                                            </label>
+                                                    ) : (
+                                                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                                                    )}
+                                                    <span className="text-gray-400 text-sm">
+                                                        {uploading ? 'Uploading...' : 'Upload Image'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-300 mb-2">Product Video (Optional)</label>
+                                            <div className="border-2 border-dashed border-white/10 rounded-2xl p-6 bg-white/5 hover:border-red-500/50 transition-all cursor-pointer relative overflow-hidden group">
+                                                <input
+                                                    type="file"
+                                                    accept="video/*"
+                                                    onChange={handleVideoChange}
+                                                    className="absolute inset-0 opacity-0 cursor-pointer z-20"
+                                                />
+                                                <div className="flex flex-col items-center justify-center text-center">
+                                                    {videoUploading ? (
+                                                        <motion.div
+                                                            animate={{ rotate: 360 }}
+                                                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                            className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full mb-2"
+                                                        />
+                                                    ) : newProduct.video ? (
+                                                        <div className="relative">
+                                                            <div className="w-20 h-20 bg-gray-800 rounded-lg flex items-center justify-center">
+                                                                <CheckCircle2 className="w-8 h-8 text-green-500" />
+                                                            </div>
+                                                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <Upload className="w-6 h-6 text-white" />
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                                                    )}
+                                                    <span className="text-gray-400 text-sm">
+                                                        {videoUploading ? 'Uploading...' : 'Upload Video'}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -488,12 +555,12 @@ const Dashboard = () => {
                                         </motion.button>
                                         <motion.button
                                             type="submit"
-                                            disabled={uploading || !newProduct.image}
+                                            disabled={uploading || videoUploading || !newProduct.image}
                                             className="px-8 py-3 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-xl font-semibold shadow-lg shadow-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            whileHover={!uploading && newProduct.image ? { scale: 1.05 } : {}}
-                                            whileTap={!uploading && newProduct.image ? { scale: 0.95 } : {}}
+                                            whileHover={!uploading && !videoUploading && newProduct.image ? { scale: 1.05 } : {}}
+                                            whileTap={!uploading && !videoUploading && newProduct.image ? { scale: 0.95 } : {}}
                                         >
-                                            {uploading ? 'Uploading...' : 'Add Product'}
+                                            {uploading || videoUploading ? 'Uploading...' : 'Add Product'}
                                         </motion.button>
                                     </div>
                                 </form>
@@ -502,7 +569,7 @@ const Dashboard = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     );
 };
 

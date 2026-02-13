@@ -8,6 +8,13 @@ const Shop = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
+    const [filters, setFilters] = useState({
+        priceRange: 20000,
+        fabric: 'All',
+        occasion: 'All'
+    });
+    const [sortBy, setSortBy] = useState('newest');
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -264,40 +271,141 @@ const Shop = () => {
                     <p className="text-gray-400 text-lg">Discover timeless elegance</p>
                 </motion.div>
 
-                {/* Search Bar */}
+                {/* Search & Filter Bar */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="max-w-2xl mx-auto mb-12"
+                    className="max-w-4xl mx-auto mb-12 space-y-4"
                 >
-                    <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                            type="text"
-                            placeholder="Search sarees..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-transparent text-white placeholder-gray-400 pl-12 pr-4 py-4 focus:outline-none"
-                        />
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex-1 relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                            <input
+                                type="text"
+                                placeholder="Search sarees by name..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full bg-transparent text-white placeholder-gray-400 pl-12 pr-4 py-4 focus:outline-none"
+                            />
+                        </div>
+                        <motion.button
+                            onClick={() => setShowFilters(!showFilters)}
+                            className={`px-6 py-4 rounded-2xl border transition-all flex items-center gap-2 font-semibold ${showFilters
+                                    ? 'bg-red-500 border-red-400 text-white shadow-lg shadow-red-500/20'
+                                    : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
+                                }`}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <SlidersHorizontal className="w-5 h-5" />
+                            Filters
+                        </motion.button>
+                        <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden min-w-[200px]">
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="w-full bg-transparent text-white px-4 py-4 focus:outline-none appearance-none cursor-pointer"
+                            >
+                                <option value="newest" className="bg-gray-800">Newest First</option>
+                                <option value="price-low" className="bg-gray-800">Price: Low to High</option>
+                                <option value="price-high" className="bg-gray-800">Price: High to Low</option>
+                            </select>
+                        </div>
                     </div>
+
+                    {/* Filter Panel */}
+                    <AnimatePresence>
+                        {showFilters && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="overflow-hidden"
+                            >
+                                <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    {/* Price Range */}
+                                    <div>
+                                        <label className="block text-gray-400 text-sm mb-3 font-medium">Max Price: ₹{filters.priceRange}</label>
+                                        <input
+                                            type="range"
+                                            min="500"
+                                            max="30000"
+                                            step="500"
+                                            value={filters.priceRange}
+                                            onChange={(e) => setFilters({ ...filters, priceRange: parseInt(e.target.value) })}
+                                            className="w-full accent-red-500 h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                                        />
+                                        <div className="flex justify-between mt-2 text-xs text-gray-500">
+                                            <span>₹500</span>
+                                            <span>₹30000</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Fabric Filter */}
+                                    <div>
+                                        <label className="block text-gray-400 text-sm mb-3 font-medium">Fabric</label>
+                                        <select
+                                            value={filters.fabric}
+                                            onChange={(e) => setFilters({ ...filters, fabric: e.target.value })}
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-red-500/50"
+                                        >
+                                            <option value="All" className="bg-gray-800">All Fabrics</option>
+                                            {[...new Set(products.map(p => p.fabric))].filter(Boolean).map(f => (
+                                                <option key={f} value={f} className="bg-gray-800">{f}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {/* Occasion Filter */}
+                                    <div>
+                                        <label className="block text-gray-400 text-sm mb-3 font-medium">Occasion</label>
+                                        <select
+                                            value={filters.occasion}
+                                            onChange={(e) => setFilters({ ...filters, occasion: e.target.value })}
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-red-500/50"
+                                        >
+                                            <option value="All" className="bg-gray-800">All Occasions</option>
+                                            {[...new Set(products.map(p => p.occasion))].filter(Boolean).map(o => (
+                                                <option key={o} value={o} className="bg-gray-800">{o}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </motion.div>
 
                 {/* Product Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16">
                     {products
-                        .filter(product =>
-                            product.name.toLowerCase().includes(searchTerm.toLowerCase())
-                        )
+                        .filter(product => {
+                            const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+                            const matchesFabric = filters.fabric === 'All' || product.fabric === filters.fabric;
+                            const matchesOccasion = filters.occasion === 'All' || product.occasion === filters.occasion;
+                            const matchesPrice = product.price <= filters.priceRange;
+                            return matchesSearch && matchesFabric && matchesOccasion && matchesPrice;
+                        })
+                        .sort((a, b) => {
+                            if (sortBy === 'price-low') return a.price - b.price;
+                            if (sortBy === 'price-high') return b.price - a.price;
+                            if (sortBy === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
+                            return 0;
+                        })
                         .map((product, index) => (
                             <TiltCard key={product._id} product={product} index={index} />
                         ))}
                 </div>
 
                 {/* Empty State */}
-                {products.filter(product =>
-                    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-                ).length === 0 && (
+                {products.filter(product => {
+                    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+                    const matchesFabric = filters.fabric === 'All' || product.fabric === filters.fabric;
+                    const matchesOccasion = filters.occasion === 'All' || product.occasion === filters.occasion;
+                    const matchesPrice = product.price <= filters.priceRange;
+                    return matchesSearch && matchesFabric && matchesOccasion && matchesPrice;
+                }).length === 0 && (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
