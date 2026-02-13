@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Package, ShoppingBag, Upload, X, Sparkles, TrendingUp, CheckCircle2 } from 'lucide-react';
@@ -37,7 +37,7 @@ const Dashboard = () => {
 
     const fetchProducts = async () => {
         try {
-            const { data } = await axios.get('/api/products');
+            const { data } = await api.get('/api/products');
             setProducts(data);
         } catch (error) {
             console.error("Error fetching products", error);
@@ -58,7 +58,7 @@ const Dashboard = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             };
-            const { data } = await axios.post('/api/upload', formData, config);
+            const { data } = await api.post('/api/upload', formData, config);
             const normalizedPath = data.path.replace(/\\/g, '/');
             setNewProduct({ ...newProduct, image: `/${normalizedPath}` });
             setUploading(false);
@@ -84,7 +84,7 @@ const Dashboard = () => {
                 images: [newProduct.image]
             };
 
-            await axios.post('/api/products', productData, config);
+            await api.post('/api/products', productData, config);
             setShowAddModal(false);
             setNewProduct({
                 name: '', price: '', fabric: '', color: '', occasion: '', description: '', image: '', category: 'Saree', stock: 10
@@ -105,7 +105,7 @@ const Dashboard = () => {
                         Authorization: `Bearer ${user.token}`,
                     },
                 };
-                await axios.delete(`/api/products/${id}`, config);
+                await api.delete(`/api/products/${id}`, config);
                 fetchProducts();
             } catch (error) {
                 console.error("Error deleting product", error);

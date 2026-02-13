@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
 import { MapPin, User, Phone, Mail, CreditCard, CheckCircle2, Sparkles } from 'lucide-react';
 
@@ -56,7 +56,7 @@ const Checkout = () => {
                 },
             };
 
-            await axios.post('/api/orders', orderData, config);
+            await api.post('/api/orders', orderData, config);
 
             const itemsList = cartItems.map((item, index) =>
                 `${index + 1}. ${item.name} (x${item.qty}) - ₹${item.price * item.qty}`
