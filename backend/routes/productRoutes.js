@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 const { protect, admin } = require('../middleware/authMiddleware');
+const { cloudinary } = require('../config/cloudinary');
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -98,8 +99,26 @@ router.delete('/:id', protect, admin, async (req, res) => {
         const product = await Product.findById(req.params.id);
 
         if (product) {
+            // Delete images from Cloudinary
+            if (product.images && product.images.length > 0) {
+                for (const imageUrl of product.images) {
+                    if (imageUrl.includes('cloudinary.com')) {
+                        const publicId = imageUrl.split('/').pop().split('.')[0];
+                        const fullPublicId = `shagun_fabrics/${publicId}`;
+                        await cloudinary.uploader.destroy(fullPublicId);
+                    }
+                }
+            }
+
+            // Delete video from Cloudinary
+            if (product.video && product.video.includes('cloudinary.com')) {
+                const publicId = product.video.split('/').pop().split('.')[0];
+                const fullPublicId = `shagun_fabrics/${publicId}`;
+                await cloudinary.uploader.destroy(fullPublicId, { resource_type: 'video' });
+            }
+
             await product.deleteOne();
-            res.json({ message: 'Product removed' });
+            res.json({ message: 'Product and associated media removed' });
         } else {
             res.status(404).json({ message: 'Product not found' });
         }
