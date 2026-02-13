@@ -73,8 +73,8 @@ const Checkout = () => {
             const whatsappUrl = `https://wa.me/919431612753?text=${message}`;
 
             clearCart();
-            window.open(whatsappUrl, '_blank');
-            navigate('/');
+            // Using window.location.href instead of window.open for better mobile compatibility
+            window.location.href = whatsappUrl;
 
         } catch (error) {
             console.error(error);
