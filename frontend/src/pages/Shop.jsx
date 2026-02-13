@@ -7,10 +7,9 @@ import { Search, SlidersHorizontal, Sparkles } from 'lucide-react';
 const Shop = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [filters, setFilters] = useState({
-        priceRange: 20000,
+        priceRange: 50000,
         fabric: 'All',
         occasion: 'All'
     });
@@ -19,23 +18,12 @@ const Shop = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await api.get('/api/products', { timeout: 3000 });
-                if (data && data.length > 0) {
+                const { data } = await api.get('/api/products', { timeout: 10000 });
+                if (data) {
                     setProducts(data);
-                } else {
-                    throw new Error("No data");
                 }
             } catch (error) {
-                console.error("Fetch failed or empty, using fallback:", error.message);
-                // Fallback data
-                setProducts([
-                    { _id: '1', name: 'Banarasi Silk Saree', price: 5000, images: ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500&q=80'], description: 'Pure silk with gold zari.' },
-                    { _id: '2', name: 'Cotton Party Wear', price: 2500, images: ['https://images.unsplash.com/photo-1583391725988-6490d8078752?w=500&q=80'], description: 'Elegant cotton saree.' },
-                    { _id: '3', name: 'Kanjivaram Blue', price: 8000, images: ['https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=500&q=80'], description: 'Royal blue Kanjivaram.' },
-                    { _id: '4', name: 'Georgette Floral', price: 1800, images: ['https://images.unsplash.com/photo-1518112390430-f4ab02e9c2c8?w=500&q=80'], description: 'Lightweight floral print.' },
-                    { _id: '5', name: 'Red Silk Wedding', price: 12000, images: ['https://images.unsplash.com/photo-1548842456-4b95d03a1103?w=500&q=80'], description: 'Premium wedding collection.' },
-                    { _id: '6', name: 'Green Chanderi', price: 3500, images: ['https://images.unsplash.com/photo-1617627961939-cca47e2b0e73?w=500&q=80'], description: 'Lightweight Chanderi silk.' },
-                ]);
+                console.error("Fetch failed:", error.message);
             } finally {
                 setLoading(false);
             }
@@ -276,41 +264,54 @@ const Shop = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="max-w-4xl mx-auto mb-12 space-y-4"
+                    className="max-w-4xl mx-auto mb-12 space-y-6"
                 >
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <div className="flex-1 relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <div className="flex flex-col md:flex-row gap-6 items-end">
+                        {/* Price Range - Moved Outside */}
+                        <div className="flex-1 backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6">
+                            <label className="block text-gray-400 text-sm mb-3 font-medium flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-yellow-400" />
+                                Max Price: ₹{filters.priceRange}
+                            </label>
                             <input
-                                type="text"
-                                placeholder="Search sarees by name..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-transparent text-white placeholder-gray-400 pl-12 pr-4 py-4 focus:outline-none"
+                                type="range"
+                                min="500"
+                                max="50000"
+                                step="500"
+                                value={filters.priceRange}
+                                onChange={(e) => setFilters({ ...filters, priceRange: parseInt(e.target.value) })}
+                                className="w-full accent-red-500 h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
                             />
+                            <div className="flex justify-between mt-2 text-xs text-gray-500">
+                                <span>₹500</span>
+                                <span>₹50000+</span>
+                            </div>
                         </div>
-                        <motion.button
-                            onClick={() => setShowFilters(!showFilters)}
-                            className={`px-6 py-4 rounded-2xl border transition-all flex items-center gap-2 font-semibold ${showFilters
-                                ? 'bg-red-500 border-red-400 text-white shadow-lg shadow-red-500/20'
-                                : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
-                                }`}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                        >
-                            <SlidersHorizontal className="w-5 h-5" />
-                            Filters
-                        </motion.button>
-                        <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden min-w-[200px]">
-                            <select
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value)}
-                                className="w-full bg-transparent text-white px-4 py-4 focus:outline-none appearance-none cursor-pointer"
+
+                        <div className="flex gap-4">
+                            <motion.button
+                                onClick={() => setShowFilters(!showFilters)}
+                                className={`px-6 py-4 rounded-2xl border transition-all flex items-center gap-2 font-semibold h-[56px] ${showFilters
+                                    ? 'bg-red-500 border-red-400 text-white shadow-lg shadow-red-500/20'
+                                    : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
+                                    }`}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
                             >
-                                <option value="newest" className="bg-gray-800">Newest First</option>
-                                <option value="price-low" className="bg-gray-800">Price: Low to High</option>
-                                <option value="price-high" className="bg-gray-800">Price: High to Low</option>
-                            </select>
+                                <SlidersHorizontal className="w-5 h-5" />
+                                Categories
+                            </motion.button>
+                            <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden min-w-[200px] h-[56px]">
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value)}
+                                    className="w-full h-full bg-transparent text-white px-4 py-4 focus:outline-none appearance-none cursor-pointer"
+                                >
+                                    <option value="newest" className="bg-gray-800">Newest First</option>
+                                    <option value="price-low" className="bg-gray-800">Price: Low to High</option>
+                                    <option value="price-high" className="bg-gray-800">Price: High to Low</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -323,25 +324,7 @@ const Shop = () => {
                                 exit={{ opacity: 0, height: 0 }}
                                 className="overflow-hidden"
                             >
-                                <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    {/* Price Range */}
-                                    <div>
-                                        <label className="block text-gray-400 text-sm mb-3 font-medium">Max Price: ₹{filters.priceRange}</label>
-                                        <input
-                                            type="range"
-                                            min="500"
-                                            max="30000"
-                                            step="500"
-                                            value={filters.priceRange}
-                                            onChange={(e) => setFilters({ ...filters, priceRange: parseInt(e.target.value) })}
-                                            className="w-full accent-red-500 h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
-                                        />
-                                        <div className="flex justify-between mt-2 text-xs text-gray-500">
-                                            <span>₹500</span>
-                                            <span>₹30000</span>
-                                        </div>
-                                    </div>
-
+                                <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {/* Fabric Filter */}
                                     <div>
                                         <label className="block text-gray-400 text-sm mb-3 font-medium">Fabric</label>
@@ -381,11 +364,10 @@ const Shop = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16">
                     {products
                         .filter(product => {
-                            const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
                             const matchesFabric = filters.fabric === 'All' || product.fabric === filters.fabric;
                             const matchesOccasion = filters.occasion === 'All' || product.occasion === filters.occasion;
                             const matchesPrice = product.price <= filters.priceRange;
-                            return matchesSearch && matchesFabric && matchesOccasion && matchesPrice;
+                            return matchesFabric && matchesOccasion && matchesPrice;
                         })
                         .sort((a, b) => {
                             if (sortBy === 'price-low') return a.price - b.price;
@@ -400,11 +382,10 @@ const Shop = () => {
 
                 {/* Empty State */}
                 {products.filter(product => {
-                    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
                     const matchesFabric = filters.fabric === 'All' || product.fabric === filters.fabric;
                     const matchesOccasion = filters.occasion === 'All' || product.occasion === filters.occasion;
                     const matchesPrice = product.price <= filters.priceRange;
-                    return matchesSearch && matchesFabric && matchesOccasion && matchesPrice;
+                    return matchesFabric && matchesOccasion && matchesPrice;
                 }).length === 0 && (
                         <motion.div
                             initial={{ opacity: 0 }}
