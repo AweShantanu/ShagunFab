@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../api';
 import { Link } from 'react-router-dom';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Search, SlidersHorizontal, Sparkles } from 'lucide-react';
 
 const Shop = () => {
@@ -292,8 +292,8 @@ const Shop = () => {
                         <motion.button
                             onClick={() => setShowFilters(!showFilters)}
                             className={`px-6 py-4 rounded-2xl border transition-all flex items-center gap-2 font-semibold ${showFilters
-                                    ? 'bg-red-500 border-red-400 text-white shadow-lg shadow-red-500/20'
-                                    : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
+                                ? 'bg-red-500 border-red-400 text-white shadow-lg shadow-red-500/20'
+                                : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
                                 }`}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
