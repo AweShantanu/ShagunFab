@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ShoppingBag, Sparkles, CheckCircle2, Package, Palette, Tag } from 'lucide-react';
@@ -15,7 +15,7 @@ const ProductDetails = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const { data } = await axios.get(`/api/products/${id}`);
+                const { data } = await api.get(`/api/products/${id}`);
                 setProduct(data);
             } catch (error) {
                 const fallbackProducts = [

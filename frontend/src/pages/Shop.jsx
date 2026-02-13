@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Search, SlidersHorizontal, Sparkles } from 'lucide-react';
@@ -12,7 +12,7 @@ const Shop = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get('/api/products', { timeout: 3000 });
+                const { data } = await api.get('/api/products', { timeout: 3000 });
                 if (data && data.length > 0) {
                     setProducts(data);
                 } else {

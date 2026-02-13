@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Sparkles, Shield, Truck, Star } from 'lucide-react';
-import axios from 'axios';
+import api from '../api';
 
 const Home = () => {
     const { scrollY } = useScroll();
@@ -34,7 +34,7 @@ const Home = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get('/api/products');
+                const { data } = await api.get('/api/products');
                 setFeaturedProducts(data.slice(0, 4));
             } catch (error) {
                 setFeaturedProducts([

@@ -59,13 +59,20 @@ const Dashboard = () => {
                 },
             };
             const { data } = await api.post('/api/upload', formData, config);
-            const normalizedPath = data.path.replace(/\\/g, '/');
-            setNewProduct({ ...newProduct, image: `/${normalizedPath}` });
+
+            // If path starts with http, it's Cloudinary, use it directly.
+            // Otherwise, it's a local filename, prepend / for the proxy/backend link.
+            const finalPath = data.path.startsWith('http')
+                ? data.path
+                : (data.path.startsWith('/') ? data.path : `/${data.path.replace(/\\/g, '/')}`);
+
+            setNewProduct({ ...newProduct, image: finalPath });
             setUploading(false);
         } catch (error) {
             console.error('File upload error', error);
             setUploading(false);
-            alert('Image upload failed');
+            const message = error.response?.data?.message || 'Image upload failed. Check backend logs.';
+            alert(message);
         }
     };
 
