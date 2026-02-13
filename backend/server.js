@@ -30,11 +30,28 @@ const uploadRoutes = require('./routes/uploadRoutes');
 app.use('/api/upload', uploadRoutes);
 
 // Database Connection
+const User = require('./models/User');
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB Connected'))
+    .then(async () => {
+        console.log('MongoDB Connected');
+        // Auto-seed admin user
+        try {
+            const adminExists = await User.findOne({ email: 'anilbhgat006@gmail.com' });
+            if (!adminExists) {
+                await User.create({
+                    name: 'Admin User',
+                    email: 'anilbhgat006@gmail.com',
+                    password: 'password123',
+                    isAdmin: true,
+                });
+                console.log('✅ Default Admin User Created');
+            }
+        } catch (error) {
+            console.error('Error auto-seeding admin:', error.message);
+        }
+    })
     .catch(err => {
         console.error('MongoDB Connection Error:', err.message);
-        console.log('Please make sure MongoDB is running locally on port 27017');
     });
 
 const PORT = process.env.PORT || 5000;
