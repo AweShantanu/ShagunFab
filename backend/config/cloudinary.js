@@ -20,7 +20,8 @@ if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && proce
         cloudinary,
         params: {
             folder: 'shagun_fabrics',
-            allowedFormats: ['jpeg', 'png', 'jpg'],
+            allowedFormats: ['jpeg', 'png', 'jpg', 'mp4', 'mov'],
+            resource_type: 'auto',
         },
     });
 

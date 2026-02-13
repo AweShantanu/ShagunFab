@@ -8,6 +8,7 @@ const productSchema = mongoose.Schema({
     occasion: { type: String, required: true }, // Wedding, Casual, Party
     description: { type: String, required: true },
     images: [{ type: String, required: true }],
+    video: { type: String },
     stock: { type: Number, required: true, default: 0 },
 }, {
     timestamps: true,
